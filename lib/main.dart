@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
@@ -40,20 +42,23 @@ class CryptoListApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const MyHomePage(title: 'Crypto Currencies List'),
+      routes: {
+        '/': (context) => CryptoListScreen(title: 'Crypto Currencies List'),
+        '/coin': (context) => CryptoCoinScreen(),
+      },
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+class CryptoListScreen extends StatefulWidget {
+  const CryptoListScreen({super.key, required this.title});
   final String title;
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  State<CryptoListScreen> createState() => _CryptoListScreenState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _CryptoListScreenState extends State<CryptoListScreen> {
   // int _counter = 0;
 
   // void _incrementCounter() {
@@ -71,22 +76,47 @@ class _MyHomePageState extends State<MyHomePage> {
       body: ListView.separated(
         itemCount: 20,
         separatorBuilder: (context, index) => Divider(),
-        itemBuilder: (context, index) => ListTile(
-          leading: SvgPicture.asset(
-            'assets/svg/log.svg',
-            width: 30,
-            height: 30,
-          ),
-          title: Text('item $index', style: textTheme.bodyMedium),
-          subtitle: Text('200000\$', style: textTheme.bodySmall),
-          trailing: Icon(Icons.arrow_forward),
-        ),
+        itemBuilder: (context, index) {
+          final coinName = 'Bitcoin $index';
+
+          return ListTile(
+            leading: SvgPicture.asset(
+              'assets/svg/logo.svg',
+              width: 30,
+              height: 30,
+            ),
+            title: Text(coinName, style: textTheme.bodyMedium),
+            subtitle: Text('200000\$', style: textTheme.bodySmall),
+            trailing: Icon(Icons.arrow_forward),
+            onTap: () {
+              Navigator.pushNamed(
+                context,
+                '/coin',
+                arguments: {'name': coinName},
+              );
+            },
+          );
+        },
       ),
       // floatingActionButton: FloatingActionButton(
       //   onPressed: _incrementCounter,
       //   tooltip: 'Increment',
       //   child: const Icon(Icons.add),
       // ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+}
+
+class CryptoCoinScreen extends StatelessWidget {
+  const CryptoCoinScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final args =
+        ModalRoute.of(context)!.settings.arguments as Map<String, String>;
+
+    return Scaffold(
+      appBar: AppBar(title: Text('From coin >> ${args['name']} ')),
     );
   }
 }
